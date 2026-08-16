@@ -1,0 +1,20 @@
+:{$PORT} {
+	encode gzip
+
+	# مسیرهای پنل → Marzban
+	handle /dashboard /dashboard/* /api/* /sub/* /app/* /statics/* /docs/* /redoc/* /openapi.json {
+		reverse_proxy 127.0.0.1:8000 {
+			header_up X-Forwarded-Proto https
+		}
+	}
+
+	# روت → برو داشبورد
+	handle / {
+		redir /dashboard 308
+	}
+
+	# بقیهٔ ترافیک → Xray (VLESS+WS)
+	handle {
+		reverse_proxy 127.0.0.1:443
+	}
+}
